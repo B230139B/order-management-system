@@ -1,8 +1,8 @@
 # Progress Report: AI-Empowered Order & Stock Management System
 
-**Candidate:** [Your Name]
-**Date:** May 6, 2026
-**Duration:** 4 Days
+**Candidate:** Chai Chang Li
+**Date:** May 5, 2026
+**Duration:** 2 Days
 **Role:** Full-Stack Developer (Backend + Frontend)
 
 ---
@@ -28,76 +28,31 @@
 
 ---
 
-### Day 2 — Atomic Transactions (Backend Orders API)
+### Day 2 — Full-Stack Integration, Testing & Final Delivery
 
-**Objective:** Implement `POST /api/orders` with race-condition-safe stock deduction.
-
-**Activities:**
-- Built FastAPI router `orders.py` with SQLAlchemy `with_for_update()` row-level locks
-- Implemented the atomic pattern:
-  ```
-  BEGIN transaction
-    SELECT ... FOR UPDATE (lock product rows)
-    IF stock < quantity → ROLLBACK
-    UPDATE products SET stock = stock - qty
-    INSERT INTO orders
-    INSERT INTO order_items
-  COMMIT
-  ```
-- Added bulk fetch + validation (all products in one query, not N+1)
-- Generated unique `order_id` (e.g., `ORD-20260506-A1B2C`)
-- Created comprehensive error handling for:
-  - Missing products (404)
-  - Insufficient stock (409)
-  - Empty order items (400)
-
-**Outcome:** `POST /api/orders` atomically deducts stock and creates orders — no overselling possible under concurrent load.
-
----
-
-### Day 3 — Frontend Integration (Cart Component)
-
-**Objective:** Build the React shopping flow with cart persistence.
+**Objective:** Complete the React UI, bridge it with the backend, and perform concurrency stress tests for final delivery.
 
 **Activities:**
-- Created `useCart` hook with localStorage persistence
-- Created `useInventory` hook with 30-second auto-refresh
-- Built `Cart` component with:
-  - Add/remove items with stock validation
-  - Running total calculation
-  - "Processing Order..." loading state
-  - Error toast on checkout failure
-- Created `StockView` component with:
-  - Table view of all products
-  - Color-coded stock badges (In Stock / Low Stock / Out of Stock)
-  - Retry button on error
-- Integrated both into `App.tsx` with proper TypeScript types
+- Frontend Core Development:
+  Created useCart hook with localStorage persistence and useInventory hook with 30-second auto-refresh.
+  Built Cart and StockView components with real-time stock validation and color-coded status badges.
+  Integrated PaymentUpload component featuring drag-and-drop support and upload progress tracking.
 
-**Outcome:** Fully functional shopping cart with inventory display and localStorage persistence.
+- System Integration & Backend Refinement:
+  Enabled CORS in FastAPI and linked the frontend to the POST /api/orders and POST /api/payments endpoints.
+  Implemented the atomic order pattern using with_for_update() to ensure race-condition-safe stock deduction.
+  Mounted static directory for secure storage and serving of bank slip images.
+ 
+- Testing & Quality Assurance:
+  Conducted concurrent load testing to verify the database's atomic integrity.
+  Finalized error handling for file validation (5MB limit, JPEG/PNG only) and API response schemas.
+  Pushed all finalized code to GitHub and documented the AI collaboration process.
 
----
+**Outcome:** Successfully accelerated the 4-day roadmap into 2 days. The system is fully operational, from atomic checkout to payment verification, and ready for production.  
 
-### Day 4 — Payment Upload Flow
-
-**Objective:** Implement bank slip upload and connect frontend to backend.
-
-**Activities:**
-- Built `POST /api/orders/{order_id}/payment` endpoint:
-  - File validation (JPEG/PNG only, max 5MB)
-  - Saves to `backend/static/payments/{order_id}/`
-  - Creates Payment record
-  - Updates order status `pending_payment` → `payment_under_review`
-- Created `PaymentUpload` component with:
-  - Drag-and-drop zone
-  - File picker fallback
-  - Client-side validation
-  - Upload progress spinner
-  - Success state with "Payment Under Review" confirmation
-- Updated `App.tsx` to switch to payment view after successful order
-- Mounted `/static` directory in FastAPI to serve uploaded images
-
-**Outcome:** Complete order → payment → upload flow working end-to-end.
-
+## How to activate frontend & backend
+frontend- cd C:\Users\PC19\Desktop\Intern_Task\backend && .\venv\Scripts\Activate.ps1 && uvicorn app.main:app --reload
+backend- cd C:\Users\PC19\Desktop\Intern_Task\frontend && npm run dev
 ---
 
 ## AI Tooling Log
